@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1a1a2e">
+<title>GTC Blasting Msgs</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  :root {
+    --bg: #0f0f1a; --surface: #1a1a2e; --card: #1e2040;
+    --border: rgba(255,255,255,0.08); --accent: #4f8ef7;
+    --text: #e8eaf0; --text-muted: #8890aa;
+    --green: #2dd4a0; --green-dim: rgba(45,212,160,0.15);
+    --radius: 12px; --radius-sm: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 15px; }
+
+  .header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 16px 10px; position: sticky; top: 0; z-index: 100; }
+  .header-top { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .logo { width: 32px; height: 32px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .logo svg { width: 18px; height: 18px; fill: white; }
+  .header-title { font-size: 16px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; }
+  .header-sub { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+  .tabs-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .tabs-wrap::-webkit-scrollbar { display: none; }
+  .tabs { display: flex; gap: 6px; padding-bottom: 2px; white-space: nowrap; }
+  .tab { padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border); font-size: 12px; font-weight: 500; cursor: pointer; background: transparent; color: var(--text-muted); transition: all 0.18s; flex-shrink: 0; }
+  .tab.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+  .content { padding: 16px; max-width: 600px; margin: 0 auto; }
+  .form-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 14px; display: none; }
+  .form-card.active { display: block; }
+  .form-section-title { font-size: 13px; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 14px; }
+  .field { margin-bottom: 12px; }
+  .field label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 5px; font-weight: 500; }
+  .field input, .field select, .field textarea { width: 100%; padding: 10px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 14px; outline: none; transition: border-color 0.15s; -webkit-appearance: none; }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent); }
+  .field textarea { resize: vertical; min-height: 64px; line-height: 1.5; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .btn-row { display: flex; gap: 10px; margin-bottom: 16px; }
+  .btn { padding: 12px 0; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; cursor: pointer; border: none; flex: 1; transition: opacity 0.15s, transform 0.1s; }
+  .btn:active { transform: scale(0.97); }
+  .btn:disabled { opacity: 0.5; }
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-secondary { background: var(--green-dim); color: var(--green); border: 1px solid rgba(45,212,160,0.3); }
+
+  .preview-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; display: none; margin-bottom: 16px; }
+  .preview-header-bar { background: #075e54; padding: 10px 14px; display: flex; align-items: center; gap: 8px; }
+  .wa-dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; }
+  .preview-header-bar span { font-size: 13px; color: rgba(255,255,255,0.9); font-weight: 500; }
+  .preview-bubble-wrap { padding: 12px; }
+  .dark-bubble { background: #1f2c34; border-radius: 8px; border-top-left-radius: 2px; padding: 12px 14px; position: relative; }
+  .dark-bubble::before { content: ''; position: absolute; left: -7px; top: 0; border-width: 0 7px 7px 0; border-style: solid; border-color: transparent #1f2c34 transparent transparent; }
+  .dark-msg-title { font-size: 14px; font-weight: 700; color: #e9edef; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; margin-bottom: 8px; }
+  .dark-row { display: flex; padding: 2px 0; }
+  .dark-key { font-size: 12px; color: #8696a0; width: 48%; padding-right: 6px; }
+  .dark-val { font-size: 13px; color: #e9edef; font-weight: 500; width: 52%; }
+  .dark-time { font-size: 11px; color: #8696a0; text-align: right; margin-top: 8px; }
+
+  .spinner { display: none; text-align: center; padding: 8px; font-size: 13px; color: var(--text-muted); }
+  .spinner.show { display: block; }
+
+  /* Hidden white image template */
+  #img-wrap { position: fixed; left: -9999px; top: 0; width: 440px; background: #fff; }
+  .img-hdr { background: #075e54; padding: 14px 18px; display: flex; align-items: center; gap: 12px; }
+  .img-hdr-icon { width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; color: #fff; font-family: Arial, sans-serif; flex-shrink: 0; }
+  .img-hdr-title { font-size: 16px; font-weight: 700; color: #fff; font-family: Arial, sans-serif; }
+  .img-hdr-sub { font-size: 11px; color: rgba(255,255,255,0.75); margin-top: 2px; font-family: Arial, sans-serif; }
+  .img-body { padding: 16px 18px; background: #fff; }
+  .img-type { font-size: 15px; font-weight: 700; color: #075e54; border-bottom: 2px solid #075e54; padding-bottom: 8px; margin-bottom: 12px; font-family: Arial, sans-serif; }
+  .img-row { display: flex; padding: 5px 0; border-bottom: 1px solid #f0f0f0; font-family: Arial, sans-serif; }
+  .img-row:last-child { border-bottom: none; }
+  .img-k { font-size: 12px; color: #777; width: 46%; padding-right: 8px; line-height: 1.4; }
+  .img-v { font-size: 13px; color: #111; font-weight: 700; width: 54%; line-height: 1.4; }
+  .img-ftr { background: #f5f5f5; padding: 8px 18px; display: flex; justify-content: space-between; font-size: 11px; color: #999; font-family: Arial, sans-serif; }
+
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--green); color: #0a2010; font-size: 13px; font-weight: 600; padding: 10px 22px; border-radius: 24px; transition: transform 0.25s; z-index: 999; white-space: nowrap; }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* Editable labels */
+  .field label { cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
+  .field label .edit-icon { opacity: 0; font-size: 10px; color: var(--accent); transition: opacity 0.15s; flex-shrink: 0; }
+  .field:hover label .edit-icon, .field label:focus .edit-icon { opacity: 1; }
+  .label-edit-input { font-size: 12px; font-weight: 600; color: var(--accent); background: rgba(79,142,247,0.12); border: 1px solid var(--accent); border-radius: 4px; padding: 1px 6px; outline: none; width: auto; min-width: 60px; max-width: 140px; }
+  .edit-hint { font-size: 11px; color: var(--text-muted); text-align: center; padding: 4px 0 10px; opacity: 0.7; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div class="logo"><svg viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+    <div>
+      <div class="header-title">GTC Blasting</div>
+      <div class="header-sub">Fill → Preview → Save image → Share to WhatsApp</div>
+    </div>
+  </div>
+  <div class="tabs-wrap">
+    <div class="tabs" id="tabs">
+      <button class="tab active" data-tab="start">Start Msg</button>
+      <button class="tab" data-tab="accessories">Accessories</button>
+      <button class="tab" data-tab="mmu-arrival">MMU Arrival</button>
+      <button class="tab" data-tab="mmu-leaving">MMU Leaving</button>
+      <button class="tab" data-tab="mmu-bd">MMU BD</button>
+      <button class="tab" data-tab="mmu-fix">MMU BD Fix</button>
+      <button class="tab" data-tab="loader-bd">Loader BD</button>
+      <button class="tab" data-tab="loader-fix">Loader Fix</button>
+      <button class="tab" data-tab="update">Update</button>
+      <button class="tab" data-tab="cam">CAM Location</button>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+  <div class="form-card active" id="tab-start">
+    <div class="form-section-title">Start Message</div>
+    <div class="edit-hint">✎ Tap any label name to rename it</div>
+    <div class="field-row">
+      <div class="field"><label>Date</label><input type="date" id="s-date"></div>
+      <div class="field"><label>Blast Shot</label><input type="text" id="s-shot" placeholder="BP6_1160_0038"></div>
+    </div>
+    <div class="field"><label>No. of Holes</label><input type="number" id="s-holes" placeholder="120"></div>
+    <div class="field-row">
+      <div class="field"><label>Rioflex 7000 (KG)</label><input type="number" id="s-rf7" placeholder="0"></div>
+      <div class="field"><label>Rioflex 5000 (KG)</label><input type="number" id="s-rf5" placeholder="0"></div>
+    </div>
+    <div class="field"><label>Total Amount (KG)</label><input type="number" id="s-total" placeholder="0"></div>
+    <div class="field-row">
+      <div class="field"><label>Blasting Time</label><input type="time" id="s-time"></div>
+      <div class="field"><label>Shotfirer Name</label><input type="text" id="s-shotfirer" placeholder="Abdelkarem / Eibed"></div>
+    </div>
+    <div class="field"><label>Location</label><input type="text" id="s-loc" placeholder="STG6 North"></div>
+    <div class="field-row">
+      <div class="field"><label>Tie-Up</label><input type="text" id="s-tieup" placeholder="Echelon"></div>
+      <div class="field"><label>Hazards</label><input type="text" id="s-hazards" placeholder="Crack / Edge"></div>
+    </div>
+    <div class="field"><label>Comments</label><textarea id="s-comments" placeholder="—"></textarea></div>
+  </div>
+
+  <div class="form-card" id="tab-accessories">
+    <div class="form-section-title">Blasting Accessories</div>
+    <div class="field-row">
+      <div class="field"><label>Date</label><input type="date" id="a-date"></div>
+      <div class="field"><label>Blast Shot</label><input type="text" id="a-shot" placeholder="BP6_1160_0038"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Time Received</label><input type="time" id="a-time"></div>
+      <div class="field"><label>Completed</label><select id="a-done"><option>Yes</option><option>No</option></select></div>
+    </div>
+    <div class="field"><label>Location</label><input type="text" id="a-loc" placeholder="STG6"></div>
+    <div class="field-row">
+      <div class="field"><label>Cap Shotfirer Name</label><input type="text" id="a-cap" placeholder="Name"></div>
+      <div class="field"><label>Client Rep. Name</label><input type="text" id="a-client" placeholder="Name"></div>
+    </div>
+    <div class="field"><label>Comments</label><textarea id="a-comments" placeholder="—"></textarea></div>
+  </div>
+
+  <div class="form-card" id="tab-mmu-arrival">
+    <div class="form-section-title">MMU Arrival</div>
+    <div class="field-row">
+      <div class="field"><label>Date</label><input type="date" id="ma-date"></div>
+      <div class="field"><label>Blast Shot</label><input type="text" id="ma-shot" placeholder="BP6_1160_0038"></div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>MMU No.</label>
+        <select id="ma-mmu-sel" onchange="toggleMmuOther('ma')">
+          <option value="F245">F245</option>
+          <option value="F246">F246</option>
+          <option value="F217">F217</option>
+          <option value="F251">F251</option>
+          <option value="other">Other…</option>
+        </select>
+        <input type="text" id="ma-mmu" placeholder="Type MMU No." style="display:none;margin-top:6px;">
+      </div>
+      <div class="field"><label>Time Arrived</label><input type="time" id="ma-time"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Total Tons (KG)</label><input type="number" id="ma-tons" placeholder="2000"></div>
+      <div class="field"><label>Rioflex Type</label><select id="ma-rftype"><option value="AN">AN</option><option value="5000">5000</option><option value="7000">7000</option></select></div>
+    </div>
+    <div class="field"><label>Shotfirer Name</label><input type="text" id="ma-shotfirer" placeholder="Abdelkarem / Eibed"></div>
+    <div class="field"><label>Comments</label><textarea id="ma-comments" placeholder="—"></textarea></div>
+  </div>
+
+  <div class="form-card" id="tab-mmu-leaving">
+    <div class="form-section-title">MMU Leaving</div>
+    <div class="field-row">
+      <div class="field"><label>Date</label><input type="date" id="ml-date"></div>
+      <div class="field"><label>Blast Shot</label><input type="text" id="ml-shot" placeholder="BP6_1160_0038"></div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>MMU No.</label>
+        <select id="ml-mmu-sel" onchange="toggleMmuOther('ml')">
+          <option value="F245">F245</option>
+          <option value="F246">F246</option>
+          <option value="F217">F217</option>
+          <option value="F251">F251</option>
+          <option value="other">Other…</option>
+        </select>
+        <input type="text" id="ml-mmu" placeholder="Type MMU No." style="display:none;margin-top:6px;">
+      </div>
+      <div class="field"><label>Time Leaving</label><input type="time" id="ml-time"></div>
+    </div>
+    <div class="field"><label>Total Tons (KG)</label><input type="number" id="ml-tottons" placeholder="2000"></div>
+    <div class="field"><label>Total Tons Pumped (KG)</label><input type="number" id="ml-tons" placeholder="1700"></div>
+    <div class="field-row">
+      <div class="field"><label>Rioflex AN (KG)</label><input type="number" id="ml-rfa" placeholder="1700"></div>
+      <div class="field"><label>Rioflex 5000 Actual (KG)</label><input type="number" id="ml-rf5" placeholder="0"></div>
+    </div>
+    <div class="field"><label>Rioflex 7000 Actual (KG)</label><input type="number" id="ml-rf7" placeholder="0"></div>
+    <div class="field"><label>Shotfirer Name</label><input type="text" id="ml-shotfirer" placeholder="Abdelkarem / Eibed"></div>
+    <div class="field"><label>Comments</label><textarea id="ml-comments" placeholder="—"></textarea></div>
+  </div>
+
+  <div class="form-card" id="tab-mmu-bd">
+    <div class="form-section-title">MMU Break Down</div>
+    <div class="field-row">
+      <div class="field"><label>Date</label><input type="date" id="mb-date"></div>
+      <div class="field"><label>Blast Shot</label><input type="text" id="mb-shot" placeholder="BP6_1160_0038"></div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>MMU No.</label>
+        <select id="mb-mmu-sel" onchange="toggleMmuOther('mb')">
+          <option value="F245">F245</option>
+          <option value="F246">F246</option>
+          <option value="F217">F217</option>
+          <option value="F251">F251</option>
+          <option value="other">Other…</option>
+        </select>
+        <input type="text" id="mb-mmu" placeholder="Type MMU No." style="display:none;margin-top:6px;">
+      </div>
+      <div class="field"><label>Time BD</label><input type="time" id="mb-time"></div>
+    </div>
+    <div class="field"><label>Fault</label><input type="text" id="mb-fault" placeholder="Describe fault"></div>
+    <div class="field"><label>Shotfirer Name</label><input type="text" id="mb-shotfirer" placeholder="Abdelkarem / Eibed"></div>
+    <div class="field"><label>Comments</label><textarea id="mb-comments" placeholder="—"></textarea></div>
+  </div>
+
+  <div class="form-card" id="tab-mmu-fix">
+    <div class="form-section-title">MMU BD Fix</div>
+    <div class="field-row">
+      <div class="field"><label>Date</label><input type="date" id="mf-date"></div>
+      <div class="field"><label>Blast Shot</label><input type="text" id="mf-shot" placeholder="BP6_1160_0038"></div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>MMU No.</label>
+        <select id="mf-mmu-sel" onchange="toggleMmuOther('mf')">
+          <option value="F245">F245</option>
+          <option value="F246">F246</option>
+          <option value="F217">F217</option>
+          <option value="F251">F251</option>
+          <option value="other">Other…</option>
+        </select>
+        <input type="text" id="mf-mmu" placeholder="Type MMU No." style="display:none;margin-top:6px;">
+      </div>
+      <div class="field"><label>Time Fixed</label><input type="time" id="mf-time"></div>
+    </div>
+    <div class="field"><label>Fault</label><input type="text" id="mf-fault" placeholder="Describe fault"></div>
+    <div class="field"><label>Time bet. BD/Up (Hr)</label><input type="number" id="mf-hrs" step="0.5" placeholder="2"></div>
+    <div class="field"><label>Shotfirer Name</label><input type="text" id="mf-shotfirer" placeholder="Abdelkarem / Eibed"></div>
+    <div class="field"><label>Comments</label><textarea id="mf-comments" placeholder="—"></textarea></div>
+  </div>
+
+  <div class="form-card" id="tab-loader-bd">
+    <div class="form-section-title">Loader Break Down</div>
+    <div class="field-row">
+      <div class="field"><label>Date</label><input type="date" id="lb-date"></div>
+      <div class="field"><label>Blast Shot</label><input type="text" id="lb-shot" placeholder="BP6_1160_0038"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Loader No.</label><input type="text" id="lb-loader" placeholder="L01"></div>
+      <div class="field"><label>Time BD</label><input type="time" id="lb-time"></div>
+    </div>
+    <div class="field"><label>Fault</label><input type="text" id="lb-fault" placeholder="Describe fault"></div>
+    <div class="field"><label>Shotfirer Name</label><input type="text" id="lb-shotfirer" placeholder="Abdelkarem / Eibed"></div>
+    <div class="field"><label>Comments</label><textarea id="lb-comments" placeholder="—"></textarea></div>
+  </div>
+
+  <div class="form-card" id="tab-loader-fix">
+    <div class="form-section-title">Loader BD Fix</div>
+    <div class="field-row">
+      <div class="field"><label>Date</label><input type="date" id="lf-date"></div>
+      <div class="field"><label>Blast Shot</label><input type="text" id="lf-shot" placeholder="BP6_1160_0038"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Loader No.</label><input type="text" id="lf-loader" placeholder="L01"></div>
+      <div class="field"><label>Time Fixed</label><input type="time" id="lf-time"></div>
+    </div>
+    <div class="field"><label>Fault</label><input type="text" id="lf-fault" placeholder="Describe fault"></div>
+    <div class="field"><label>Time bet. BD/Up (Hr)</label><input type="number" id="lf-hrs" step="0.5" placeholder="2"></div>
+    <div class="field"><label>Shotfirer Name</label><input type="text" id="lf-shotfirer" placeholder="Abdelkarem / Eibed"></div>
+    <div class="field"><label>Comments</label><textarea id="lf-comments" placeholder="—"></textarea></div>
+  </div>
+
+  <div class="form-card" id="tab-update">
+    <div class="form-section-title">Update</div>
+    <div class="field-row">
+      <div class="field"><label>Date</label><input type="date" id="u-date"></div>
+      <div class="field"><label>Blast Shot</label><input type="text" id="u-shot" placeholder="BP6_1160_0038"></div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Time</label>
+        <select id="u-time-sel" onchange="toggleUpdateTime()">
+          <option value="9:00AM">9:00AM</option>
+          <option value="12:00PM">12:00PM</option>
+          <option value="3:00PM">3:00PM</option>
+          <option value="other">Other…</option>
+        </select>
+        <input type="text" id="u-time" placeholder="e.g. 10:30AM" style="display:none;margin-top:6px;">
+      </div>
+      <div class="field"><label>Shotfirer Name</label><input type="text" id="u-shotfirer" placeholder="Abdelkarem / Eibed"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Loading %</label><input type="number" id="u-loading" min="0" max="100" placeholder="0"></div>
+      <div class="field"><label>Stemming %</label><input type="number" id="u-stem" min="0" max="100" placeholder="0"></div>
+    </div>
+    <div class="field"><label>Tie-up %</label><input type="number" id="u-tieup" min="0" max="100" placeholder="0"></div>
+    <div class="field"><label>Comments</label><textarea id="u-comments" placeholder="—"></textarea></div>
+  </div>
+
+  <div class="form-card" id="tab-cam">
+    <div class="form-section-title">CAM Location</div>
+    <div class="field-row">
+      <div class="field"><label>Date</label><input type="date" id="c-date"></div>
+      <div class="field"><label>Blast Shot</label><input type="text" id="c-shot" placeholder="BP6_1160_0038"></div>
+    </div>
+    <div class="field"><label>Blasting Time</label><input type="time" id="c-time"></div>
+    <div class="field-row">
+      <div class="field">
+        <label>Point 1 (Camera)</label>
+        <select id="c-p1">
+          <option value="CAM1 (STG8)">CAM1 (STG8)</option>
+          <option value="CAM2 (Network Signal Ramp)">CAM2 (Network Signal Ramp)</option>
+          <option value="CAM3 (Dispatcher)">CAM3 (Dispatcher)</option>
+        </select>
+      </div>
+      <div class="field"><label>Point 2</label><input type="text" id="c-p2" placeholder="CAM S2, Name"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Point 3</label><input type="text" id="c-p3" placeholder="CAM S3, Name"></div>
+      <div class="field"><label>Point 4</label><input type="text" id="c-p4" placeholder="CAM S4, Name"></div>
+    </div>
+    <div class="field"><label>Comments</label><textarea id="c-comments" placeholder="—"></textarea></div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-primary" id="btn-gen">&#9889; Preview</button>
+    <button class="btn btn-secondary" id="btn-share">&#128247; Save &amp; Share</button>
+  </div>
+  <div class="spinner" id="spinner">Generating image...</div>
+
+  <div class="preview-card" id="preview">
+    <div class="preview-header-bar">
+      <div class="wa-dot"></div>
+      <span>GTC Blasting — preview</span>
+    </div>
+    <div class="preview-bubble-wrap">
+      <div class="dark-bubble">
+        <div id="preview-content"></div>
+        <div class="dark-time" id="preview-time"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden white template rendered to image -->
+<div id="img-wrap">
+  <div id="img-table">
+    <div class="img-hdr">
+      <div class="img-hdr-icon">G</div>
+      <div>
+        <div class="img-hdr-title">GTC Blasting</div>
+        <div class="img-hdr-sub" id="img-sub">Operations</div>
+      </div>
+    </div>
+    <div class="img-body">
+      <div class="img-type" id="img-type">Message</div>
+      <div id="img-rows"></div>
+    </div>
+    <div class="img-ftr">
+      <span>GTC Blasting Operations</span>
+      <span id="img-time"></span>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">Done ✓</div>
+
+<script>
+const todayStr = new Date().toISOString().split('T')[0];
+document.querySelectorAll('input[type="date"]').forEach(el => el.value = todayStr);
+// Init editable labels after DOM is ready
+document.addEventListener('DOMContentLoaded', initEditableLabels);
+// Also run immediately since script is at end of body
+initEditableLabels();
+
+function fmt12(val) {
+  if (!val || val === '—') return '—';
+  const [h, m] = val.split(':').map(Number);
+  const ap = h >= 12 ? 'PM' : 'AM';
+  const hr = h % 12 || 12;
+  return (hr < 10 ? '0' : '') + hr + '.' + (m < 10 ? '0' : '') + m + ap;
+}
+function toggleMmuOther(prefix) {
+  const sel = document.getElementById(prefix + '-mmu-sel');
+  const inp = document.getElementById(prefix + '-mmu');
+  if (sel && inp) {
+    inp.style.display = sel.value === 'other' ? 'block' : 'none';
+  }
+}
+function mmuVal(prefix) {
+  const sel = document.getElementById(prefix + '-mmu-sel');
+  if (!sel) return '—';
+  if (sel.value === 'other') return v(prefix + '-mmu');
+  return sel.value || '—';
+}
+function toggleUpdateTime() {
+  const sel = document.getElementById('u-time-sel');
+  const inp = document.getElementById('u-time');
+  if (sel && inp) {
+    inp.style.display = sel.value === 'other' ? 'block' : 'none';
+  }
+}
+function updateTimeVal() {
+  const sel = document.getElementById('u-time-sel');
+  if (!sel) return '—';
+  if (sel.value === 'other') return v('u-time');
+  return sel.value || '—';
+}
+
+function fmtDate(val) {
+  if (!val || val === '—') return '—';
+  const [y, mo, d] = val.split('-');
+  return d + '/' + mo + '/' + y;
+}
+function v(id) { const el = document.getElementById(id); return el ? (el.value.trim() || '—') : '—'; }
+function nowTime() {
+  const n = new Date(), h = n.getHours(), m = n.getMinutes();
+  const ap = h >= 12 ? 'PM' : 'AM', hr = h % 12 || 12;
+  return (hr < 10 ? '0' : '') + hr + ':' + (m < 10 ? '0' : '') + m + ' ' + ap;
+}
+
+// ── Editable labels ──────────────────────────────────────────────
+const labelOverrides = {};
+
+function initEditableLabels() {
+  document.querySelectorAll('.field label').forEach(lbl => {
+    const orig = lbl.textContent.trim();
+    lbl.dataset.orig = orig;
+    lbl.innerHTML = '<span class="lbl-text">' + orig + '</span><span class="edit-icon" title="Tap to rename">✎</span>';
+    lbl.querySelector('.edit-icon').addEventListener('click', e => { e.stopPropagation(); startLabelEdit(lbl); });
+    lbl.querySelector('.lbl-text').addEventListener('dblclick', e => { e.stopPropagation(); startLabelEdit(lbl); });
+  });
+}
+
+function startLabelEdit(lbl) {
+  if (lbl.querySelector('.label-edit-input')) return;
+  const span = lbl.querySelector('.lbl-text');
+  const current = span.textContent;
+  const inp = document.createElement('input');
+  inp.className = 'label-edit-input';
+  inp.value = current;
+  inp.style.width = Math.max(current.length * 8, 60) + 'px';
+  span.replaceWith(inp);
+  lbl.querySelector('.edit-icon').style.opacity = '1';
+  inp.focus(); inp.select();
+  function commit() {
+    const newVal = inp.value.trim() || lbl.dataset.orig;
+    labelOverrides[lbl.dataset.orig] = newVal;
+    const newSpan = document.createElement('span');
+    newSpan.className = 'lbl-text';
+    newSpan.textContent = newVal;
+    newSpan.addEventListener('dblclick', e => { e.stopPropagation(); startLabelEdit(lbl); });
+    inp.replaceWith(newSpan);
+    lbl.querySelector('.edit-icon').style.opacity = '';
+    showToast('Label renamed ✓');
+  }
+  inp.addEventListener('blur', commit);
+  inp.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); inp.blur(); }
+    if (e.key === 'Escape') { inp.value = lbl.dataset.orig; inp.blur(); }
+  });
+  inp.addEventListener('input', () => { inp.style.width = Math.max(inp.value.length * 8, 60) + 'px'; });
+}
+
+function labelFor(origKey) { return labelOverrides[origKey] || origKey; }
+// ── End editable labels ───────────────────────────────────────────
+
+let activeTab = 'start';
+const tabLabels = {
+  'start':'Start Msg','accessories':'Blasting Accessories','mmu-arrival':'MMU Arrival',
+  'mmu-leaving':'MMU Leaving','mmu-bd':'MMU Break Down','mmu-fix':'MMU BD Fix',
+  'loader-bd':'Loader Break Down','loader-fix':'Loader BD Fix','update':'Update','cam':'CAM Location'
+};
+
+function getRows(tab) {
+  const lf = labelFor;
+  const R = {
+    'start':[[lf('Date'),fmtDate(v('s-date'))],[lf('Blast shot'),v('s-shot')],[lf('No. of holes'),v('s-holes')],[lf('Rioflex 7000'),v('s-rf7')+' KG'],[lf('Rioflex 5000'),v('s-rf5')+' KG'],[lf('Total Amount'),v('s-total')+' KG'],[lf('Blasting Time'),fmt12(v('s-time'))],[lf('Shotfirer Name'),v('s-shotfirer')],[lf('Location'),v('s-loc')],[lf('Tie-Up'),v('s-tieup')],[lf('Hazards'),v('s-hazards')],[lf('Comments'),v('s-comments')]],
+    'accessories':[[lf('Date'),fmtDate(v('a-date'))],[lf('Blast shot'),v('a-shot')],[lf('Time Received'),fmt12(v('a-time'))],[lf('Location'),v('a-loc')],[lf('Cap Shotfirer Name'),v('a-cap')],[lf('Client Rep. Name'),v('a-client')],[lf('Completed'),v('a-done')],[lf('Comments'),v('a-comments')]],
+    'mmu-arrival':[[lf('Date'),fmtDate(v('ma-date'))],[lf('Blast shot'),v('ma-shot')],[lf('MMU No.'),mmuVal('ma')],[lf('Time Arrived'),fmt12(v('ma-time'))],[lf('Total Tons'),v('ma-tons')+' KG'],[lf('Rioflex'),v('ma-rftype')],[lf('Shotfirer Name'),v('ma-shotfirer')],[lf('Comments'),v('ma-comments')]],
+    'mmu-leaving':[[lf('Date'),fmtDate(v('ml-date'))],[lf('Blast shot'),v('ml-shot')],[lf('MMU No.'),mmuVal('ml')],[lf('Time Leaving'),fmt12(v('ml-time'))],[lf('Total Tons'),v('ml-tottons')+' KG'],[lf('Total Tons Pumped'),v('ml-tons')+' KG'],[lf('Rioflex AN'),v('ml-rfa')+' KG'],[lf('Rioflex 5000 Actual'),v('ml-rf5')+' KG'],[lf('Rioflex 7000 Actual'),v('ml-rf7')+' KG'],[lf('Shotfirer Name'),v('ml-shotfirer')],[lf('Comments'),v('ml-comments')]],
+    'mmu-bd':[[lf('Date'),fmtDate(v('mb-date'))],[lf('Blast shot'),v('mb-shot')],[lf('MMU No.'),mmuVal('mb')],[lf('Fault'),v('mb-fault')],[lf('Time BD'),fmt12(v('mb-time'))],[lf('Shotfirer Name'),v('mb-shotfirer')],[lf('Comments'),v('mb-comments')]],
+    'mmu-fix':[[lf('Date'),fmtDate(v('mf-date'))],[lf('Blast shot'),v('mf-shot')],[lf('MMU No.'),mmuVal('mf')],[lf('Fault'),v('mf-fault')],[lf('Time Fixed'),fmt12(v('mf-time'))],[lf('Time bet. BD/Up'),v('mf-hrs')+' Hr'],[lf('Shotfirer Name'),v('mf-shotfirer')],[lf('Comments'),v('mf-comments')]],
+    'loader-bd':[[lf('Date'),fmtDate(v('lb-date'))],[lf('Blast shot'),v('lb-shot')],[lf('Loader No.'),v('lb-loader')],[lf('Fault'),v('lb-fault')],[lf('Time BD'),fmt12(v('lb-time'))],[lf('Shotfirer Name'),v('lb-shotfirer')],[lf('Comments'),v('lb-comments')]],
+    'loader-fix':[[lf('Date'),fmtDate(v('lf-date'))],[lf('Blast shot'),v('lf-shot')],[lf('Loader No.'),v('lf-loader')],[lf('Fault'),v('lf-fault')],[lf('Time Fixed'),fmt12(v('lf-time'))],[lf('Time bet. BD/Up'),v('lf-hrs')+' Hr'],[lf('Shotfirer Name'),v('lf-shotfirer')],[lf('Comments'),v('lf-comments')]],
+    'update':[[lf('Date'),fmtDate(v('u-date'))],[lf('Blast shot'),v('u-shot')],[lf('Time'),updateTimeVal()],[lf('Shotfirer Name'),v('u-shotfirer')],[lf('Loading'),v('u-loading')+'%'],[lf('Stemming'),v('u-stem')+'%'],[lf('Tie-up'),v('u-tieup')+'%'],[lf('Comments'),v('u-comments')]],
+    'cam':[[lf('Date'),fmtDate(v('c-date'))],[lf('Blast shot'),v('c-shot')],[lf('Blasting Time'),fmt12(v('c-time'))],[lf('Point 1 (Camera)'),v('c-p1')],[lf('Point 2'),v('c-p2')],[lf('Point 3'),v('c-p3')],[lf('Point 4'),v('c-p4')],[lf('Comments'),v('c-comments')]]
+  };
+  return R[tab] || [];
+}
+
+document.getElementById('tabs').addEventListener('click', e => {
+  if (!e.target.classList.contains('tab')) return;
+  activeTab = e.target.dataset.tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  e.target.classList.add('active');
+  document.querySelectorAll('.form-card').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + activeTab).classList.add('active');
+  document.getElementById('preview').style.display = 'none';
+});
+
+function showDarkPreview(rows, title) {
+  let html = '<div class="dark-msg-title">' + title + '</div>';
+  rows.forEach(([k,val]) => { html += '<div class="dark-row"><span class="dark-key">'+k+'</span><span class="dark-val">'+val+'</span></div>'; });
+  document.getElementById('preview-content').innerHTML = html;
+  document.getElementById('preview-time').textContent = nowTime();
+  document.getElementById('preview').style.display = 'block';
+}
+
+function buildImgTable(rows, title) {
+  document.getElementById('img-type').textContent = title;
+  document.getElementById('img-sub').textContent = fmtDate(todayStr);
+  document.getElementById('img-time').textContent = nowTime();
+  let html = '';
+  rows.forEach(([k,val]) => { html += '<div class="img-row"><span class="img-k">'+k+'</span><span class="img-v">'+val+'</span></div>'; });
+  document.getElementById('img-rows').innerHTML = html;
+}
+
+document.getElementById('btn-gen').addEventListener('click', () => {
+  const rows = getRows(activeTab);
+  showDarkPreview(rows, tabLabels[activeTab]);
+  document.getElementById('preview').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+});
+
+document.getElementById('btn-share').addEventListener('click', async () => {
+  const rows = getRows(activeTab);
+  const title = tabLabels[activeTab];
+  showDarkPreview(rows, title);
+  buildImgTable(rows, title);
+
+  const spinner = document.getElementById('spinner');
+  const btn = document.getElementById('btn-share');
+  btn.disabled = true;
+  spinner.classList.add('show');
+
+  await new Promise(r => setTimeout(r, 400));
+
+  try {
+    const canvas = await html2canvas(document.getElementById('img-table'), {
+      scale: 2.5, backgroundColor: '#ffffff', useCORS: true, logging: false
+    });
+
+    canvas.toBlob(async (blob) => {
+      const fname = 'GTC_' + title.replace(/\s+/g,'_') + '.png';
+      const file = new File([blob], fname, { type: 'image/png' });
+
+      // Mobile native share sheet (Android & iOS)
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({ files: [file], title: 'GTC Blasting — ' + title });
+          spinner.classList.remove('show'); btn.disabled = false;
+          return;
+        } catch(e) { /* cancelled or failed, fall through */ }
+      }
+
+      // Desktop fallback: download file
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = fname;
+      document.body.appendChild(a); a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('Image downloaded! Share from your gallery ✓');
+      spinner.classList.remove('show'); btn.disabled = false;
+    }, 'image/png');
+
+  } catch(err) {
+    spinner.classList.remove('show'); btn.disabled = false;
+    showToast('Error — try again');
+  }
+});
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
