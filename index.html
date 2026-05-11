@@ -269,6 +269,15 @@
       </div>
       <div class="field"><label>Time Leaving</label><input type="time" id="ml-time"></div>
     </div>
+    <div class="field">
+      <label>#Load</label>
+      <select id="ml-load-sel" onchange="toggleCustom('ml-load-sel','ml-load')">
+        <option value="1st Load">1st Load</option>
+        <option value="2nd Load">2nd Load</option>
+        <option value="other">Other…</option>
+      </select>
+      <input type="text" id="ml-load" placeholder="Type load" style="display:none;margin-top:6px;">
+    </div>
     <div class="field"><label>Total Tons (KG)</label><input type="number" id="ml-tottons" placeholder="2000"></div>
     <div class="field"><label>Total Tons Pumped (KG)</label><input type="number" id="ml-tons" placeholder="1700"></div>
     <div class="field-row">
@@ -583,7 +592,7 @@ function getRows(tab) {
     'start':[[lf('Date'),fmtDate(v('s-date'))],[lf('Blast shot'),v('s-shot')],[lf('No. of holes'),v('s-holes')],[lf('Rioflex 7000'),v('s-rf7')+' KG'],[lf('Rioflex 5000'),v('s-rf5')+' KG'],[lf('Total Amount'),v('s-total')+' KG'],[lf('Blasting Time'),fmt12(v('s-time'))],[lf('Shotfirer Name'),v('s-shotfirer')],[lf('Location'),customVal('s-loc-sel','s-loc')],[lf('Tie-Up'),customVal('s-tieup-sel','s-tieup')],[lf('Hazards'),customVal('s-hazards-sel','s-hazards')],[lf('Comments'),v('s-comments')]],
     'accessories':[[lf('Date'),fmtDate(v('a-date'))],[lf('Blast shot'),v('a-shot')],[lf('Time Received'),fmt12(v('a-time'))],[lf('Location'),v('a-loc')],[lf('Cap Shotfirer Name'),v('a-cap')],[lf('Client Rep. Name'),v('a-client')],[lf('Completed'),v('a-done')],[lf('Comments'),v('a-comments')]],
     'mmu-arrival':[[lf('Date'),fmtDate(v('ma-date'))],[lf('Blast shot'),v('ma-shot')],[lf('MMU No.'),mmuVal('ma')],[lf('Time Arrived'),fmt12(v('ma-time'))],[lf('#Load'),customVal('ma-load-sel','ma-load')],[lf('MMU Handler'),customVal('ma-handler-sel','ma-handler')],[lf('Total Tons'),v('ma-tons')+' KG'],[lf('Rioflex AN'),v('ma-rfa')+' KG'],[lf('Rioflex 5000 Actual'),v('ma-rf5')+' KG'],[lf('Rioflex 7000 Actual'),v('ma-rf7')+' KG'],[lf('Shotfirer Name'),v('ma-shotfirer')],[lf('Comments'),v('ma-comments')]],
-    'mmu-leaving':[[lf('Date'),fmtDate(v('ml-date'))],[lf('Blast shot'),v('ml-shot')],[lf('MMU No.'),mmuVal('ml')],[lf('Time Leaving'),fmt12(v('ml-time'))],[lf('Total Tons'),v('ml-tottons')+' KG'],[lf('Total Tons Pumped'),v('ml-tons')+' KG'],[lf('Rioflex AN'),v('ml-rfa')+' KG'],[lf('Rioflex 5000 Actual'),v('ml-rf5')+' KG'],[lf('Rioflex 7000 Actual'),v('ml-rf7')+' KG'],[lf('Shotfirer Name'),v('ml-shotfirer')],[lf('Comments'),v('ml-comments')]],
+    'mmu-leaving':[[lf('Date'),fmtDate(v('ml-date'))],[lf('Blast shot'),v('ml-shot')],[lf('MMU No.'),mmuVal('ml')],[lf('Time Leaving'),fmt12(v('ml-time'))],[lf('#Load'),customVal('ml-load-sel','ml-load')],[lf('Total Tons'),v('ml-tottons')+' KG'],[lf('Total Tons Pumped'),v('ml-tons')+' KG'],[lf('Rioflex AN'),v('ml-rfa')+' KG'],[lf('Rioflex 5000 Actual'),v('ml-rf5')+' KG'],[lf('Rioflex 7000 Actual'),v('ml-rf7')+' KG'],[lf('Shotfirer Name'),v('ml-shotfirer')],[lf('Comments'),v('ml-comments')]],
     'mmu-bd':[[lf('Date'),fmtDate(v('mb-date'))],[lf('Blast shot'),v('mb-shot')],[lf('MMU No.'),mmuVal('mb')],[lf('Fault'),v('mb-fault')],[lf('Time BD'),fmt12(v('mb-time'))],[lf('Shotfirer Name'),v('mb-shotfirer')],[lf('Comments'),v('mb-comments')]],
     'mmu-fix':[[lf('Date'),fmtDate(v('mf-date'))],[lf('Blast shot'),v('mf-shot')],[lf('MMU No.'),mmuVal('mf')],[lf('Fault'),v('mf-fault')],[lf('Time Fixed'),fmt12(v('mf-time'))],[lf('Time bet. BD/Up'),v('mf-hrs')+' Hr'],[lf('Shotfirer Name'),v('mf-shotfirer')],[lf('Comments'),v('mf-comments')]],
     'loader-bd':[[lf('Date'),fmtDate(v('lb-date'))],[lf('Blast shot'),v('lb-shot')],[lf('Loader No.'),v('lb-loader')],[lf('Fault'),v('lb-fault')],[lf('Time BD'),fmt12(v('lb-time'))],[lf('Shotfirer Name'),v('lb-shotfirer')],[lf('Comments'),v('lb-comments')]],
