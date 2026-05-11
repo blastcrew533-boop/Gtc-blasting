@@ -135,10 +135,41 @@
       <div class="field"><label>Blasting Time</label><input type="time" id="s-time"></div>
       <div class="field"><label>Shotfirer Name</label><input type="text" id="s-shotfirer" placeholder="Abdelkarem / Eibed"></div>
     </div>
-    <div class="field"><label>Location</label><input type="text" id="s-loc" placeholder="STG6 North"></div>
+    <div class="field">
+      <label>Location</label>
+      <select id="s-loc-sel" onchange="toggleCustom('s-loc-sel','s-loc')">
+        <option value="STG6 North">STG6 North</option>
+        <option value="STG6 South">STG6 South</option>
+        <option value="STG6 Middle">STG6 Middle</option>
+        <option value="other">Other…</option>
+      </select>
+      <input type="text" id="s-loc" placeholder="Type location" style="display:none;margin-top:6px;">
+    </div>
     <div class="field-row">
-      <div class="field"><label>Tie-Up</label><input type="text" id="s-tieup" placeholder="Echelon"></div>
-      <div class="field"><label>Hazards</label><input type="text" id="s-hazards" placeholder="Crack / Edge"></div>
+      <div class="field">
+        <label>Tie-Up</label>
+        <select id="s-tieup-sel" onchange="toggleCustom('s-tieup-sel','s-tieup')">
+          <option value="Full Chevron (V-cut)">Full Chevron (V-cut)</option>
+          <option value="Half Chevron (Echelon)">Half Chevron (Echelon)</option>
+          <option value="Box-cut">Box-cut</option>
+          <option value="Zigzag">Zigzag</option>
+          <option value="Center-lift">Center-lift</option>
+          <option value="other">Other…</option>
+        </select>
+        <input type="text" id="s-tieup" placeholder="Type tie-up" style="display:none;margin-top:6px;">
+      </div>
+      <div class="field">
+        <label>Hazards</label>
+        <select id="s-hazards-sel" onchange="toggleCustom('s-hazards-sel','s-hazards')">
+          <option value="Crack/ Edge/ High wall">Crack/ Edge/ High wall</option>
+          <option value="Edge/ High wall">Edge/ High wall</option>
+          <option value="Crack/ Edge">Crack/ Edge</option>
+          <option value="Edge">Edge</option>
+          <option value="Highwall">Highwall</option>
+          <option value="other">Other…</option>
+        </select>
+        <input type="text" id="s-hazards" placeholder="Type hazard" style="display:none;margin-top:6px;">
+      </div>
     </div>
     <div class="field"><label>Comments</label><textarea id="s-comments" placeholder="—"></textarea></div>
   </div>
@@ -181,10 +212,12 @@
       </div>
       <div class="field"><label>Time Arrived</label><input type="time" id="ma-time"></div>
     </div>
+    <div class="field"><label>Total Tons (KG)</label><input type="number" id="ma-tons" placeholder="2000"></div>
     <div class="field-row">
-      <div class="field"><label>Total Tons (KG)</label><input type="number" id="ma-tons" placeholder="2000"></div>
-      <div class="field"><label>Rioflex Type</label><select id="ma-rftype"><option value="AN">AN</option><option value="5000">5000</option><option value="7000">7000</option></select></div>
+      <div class="field"><label>Rioflex AN (KG)</label><input type="number" id="ma-rfa" placeholder="1700"></div>
+      <div class="field"><label>Rioflex 5000 Actual (KG)</label><input type="number" id="ma-rf5" placeholder="0"></div>
     </div>
+    <div class="field"><label>Rioflex 7000 Actual (KG)</label><input type="number" id="ma-rf7" placeholder="0"></div>
     <div class="field"><label>Shotfirer Name</label><input type="text" id="ma-shotfirer" placeholder="Abdelkarem / Eibed"></div>
     <div class="field"><label>Comments</label><textarea id="ma-comments" placeholder="—"></textarea></div>
   </div>
@@ -412,6 +445,19 @@ function fmt12(val) {
   const hr = h % 12 || 12;
   return (hr < 10 ? '0' : '') + hr + '.' + (m < 10 ? '0' : '') + m + ap;
 }
+function toggleCustom(selId, inputId) {
+  const sel = document.getElementById(selId);
+  const inp = document.getElementById(inputId);
+  if (sel && inp) {
+    inp.style.display = sel.value === 'other' ? 'block' : 'none';
+  }
+}
+function customVal(selId, inputId) {
+  const sel = document.getElementById(selId);
+  if (!sel) return v(inputId);
+  if (sel.value === 'other') return v(inputId);
+  return sel.value || '—';
+}
 function toggleMmuOther(prefix) {
   const sel = document.getElementById(prefix + '-mmu-sel');
   const inp = document.getElementById(prefix + '-mmu');
@@ -507,9 +553,9 @@ const tabLabels = {
 function getRows(tab) {
   const lf = labelFor;
   const R = {
-    'start':[[lf('Date'),fmtDate(v('s-date'))],[lf('Blast shot'),v('s-shot')],[lf('No. of holes'),v('s-holes')],[lf('Rioflex 7000'),v('s-rf7')+' KG'],[lf('Rioflex 5000'),v('s-rf5')+' KG'],[lf('Total Amount'),v('s-total')+' KG'],[lf('Blasting Time'),fmt12(v('s-time'))],[lf('Shotfirer Name'),v('s-shotfirer')],[lf('Location'),v('s-loc')],[lf('Tie-Up'),v('s-tieup')],[lf('Hazards'),v('s-hazards')],[lf('Comments'),v('s-comments')]],
+    'start':[[lf('Date'),fmtDate(v('s-date'))],[lf('Blast shot'),v('s-shot')],[lf('No. of holes'),v('s-holes')],[lf('Rioflex 7000'),v('s-rf7')+' KG'],[lf('Rioflex 5000'),v('s-rf5')+' KG'],[lf('Total Amount'),v('s-total')+' KG'],[lf('Blasting Time'),fmt12(v('s-time'))],[lf('Shotfirer Name'),v('s-shotfirer')],[lf('Location'),customVal('s-loc-sel','s-loc')],[lf('Tie-Up'),customVal('s-tieup-sel','s-tieup')],[lf('Hazards'),customVal('s-hazards-sel','s-hazards')],[lf('Comments'),v('s-comments')]],
     'accessories':[[lf('Date'),fmtDate(v('a-date'))],[lf('Blast shot'),v('a-shot')],[lf('Time Received'),fmt12(v('a-time'))],[lf('Location'),v('a-loc')],[lf('Cap Shotfirer Name'),v('a-cap')],[lf('Client Rep. Name'),v('a-client')],[lf('Completed'),v('a-done')],[lf('Comments'),v('a-comments')]],
-    'mmu-arrival':[[lf('Date'),fmtDate(v('ma-date'))],[lf('Blast shot'),v('ma-shot')],[lf('MMU No.'),mmuVal('ma')],[lf('Time Arrived'),fmt12(v('ma-time'))],[lf('Total Tons'),v('ma-tons')+' KG'],[lf('Rioflex'),v('ma-rftype')],[lf('Shotfirer Name'),v('ma-shotfirer')],[lf('Comments'),v('ma-comments')]],
+    'mmu-arrival':[[lf('Date'),fmtDate(v('ma-date'))],[lf('Blast shot'),v('ma-shot')],[lf('MMU No.'),mmuVal('ma')],[lf('Time Arrived'),fmt12(v('ma-time'))],[lf('Total Tons'),v('ma-tons')+' KG'],[lf('Rioflex AN'),v('ma-rfa')+' KG'],[lf('Rioflex 5000 Actual'),v('ma-rf5')+' KG'],[lf('Rioflex 7000 Actual'),v('ma-rf7')+' KG'],[lf('Shotfirer Name'),v('ma-shotfirer')],[lf('Comments'),v('ma-comments')]],
     'mmu-leaving':[[lf('Date'),fmtDate(v('ml-date'))],[lf('Blast shot'),v('ml-shot')],[lf('MMU No.'),mmuVal('ml')],[lf('Time Leaving'),fmt12(v('ml-time'))],[lf('Total Tons'),v('ml-tottons')+' KG'],[lf('Total Tons Pumped'),v('ml-tons')+' KG'],[lf('Rioflex AN'),v('ml-rfa')+' KG'],[lf('Rioflex 5000 Actual'),v('ml-rf5')+' KG'],[lf('Rioflex 7000 Actual'),v('ml-rf7')+' KG'],[lf('Shotfirer Name'),v('ml-shotfirer')],[lf('Comments'),v('ml-comments')]],
     'mmu-bd':[[lf('Date'),fmtDate(v('mb-date'))],[lf('Blast shot'),v('mb-shot')],[lf('MMU No.'),mmuVal('mb')],[lf('Fault'),v('mb-fault')],[lf('Time BD'),fmt12(v('mb-time'))],[lf('Shotfirer Name'),v('mb-shotfirer')],[lf('Comments'),v('mb-comments')]],
     'mmu-fix':[[lf('Date'),fmtDate(v('mf-date'))],[lf('Blast shot'),v('mf-shot')],[lf('MMU No.'),mmuVal('mf')],[lf('Fault'),v('mf-fault')],[lf('Time Fixed'),fmt12(v('mf-time'))],[lf('Time bet. BD/Up'),v('mf-hrs')+' Hr'],[lf('Shotfirer Name'),v('mf-shotfirer')],[lf('Comments'),v('mf-comments')]],
