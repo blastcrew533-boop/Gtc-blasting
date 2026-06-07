@@ -391,12 +391,12 @@
       <div class="field"><label>Shotfirer Name</label><input type="text" id="u-shotfirer" placeholder="Abdelkarem / Eibed"></div>
     </div>
     <div class="field-row">
+      <div class="field"><label>Priming %</label><input type="number" id="u-priming" min="0" max="100" placeholder="0"></div>
       <div class="field"><label>Loading %</label><input type="number" id="u-loading" min="0" max="100" placeholder="0"></div>
-      <div class="field"><label>Stemming %</label><input type="number" id="u-stem" min="0" max="100" placeholder="0"></div>
     </div>
     <div class="field-row">
+      <div class="field"><label>Stemming %</label><input type="number" id="u-stem" min="0" max="100" placeholder="0"></div>
       <div class="field"><label>Tie-up %</label><input type="number" id="u-tieup" min="0" max="100" placeholder="0"></div>
-      <div class="field"><label>Priming %</label><input type="number" id="u-priming" min="0" max="100" placeholder="0"></div>
     </div>
     <div class="field"><label>Comments</label><textarea id="u-comments" placeholder="—"></textarea></div>
   </div>
@@ -600,7 +600,7 @@ function getRows(tab) {
     'mmu-fix':[[lf('Date'),fmtDate(v('mf-date'))],[lf('Blast shot'),v('mf-shot')],[lf('MMU No.'),mmuVal('mf')],[lf('Fault'),v('mf-fault')],[lf('Time Fixed'),fmt12(v('mf-time'))],[lf('Time bet. BD/Up'),v('mf-hrs')+' Hr'],[lf('Shotfirer Name'),v('mf-shotfirer')],[lf('Comments'),v('mf-comments')]],
     'loader-bd':[[lf('Date'),fmtDate(v('lb-date'))],[lf('Blast shot'),v('lb-shot')],[lf('Loader No.'),v('lb-loader')],[lf('Fault'),v('lb-fault')],[lf('Time BD'),fmt12(v('lb-time'))],[lf('Shotfirer Name'),v('lb-shotfirer')],[lf('Comments'),v('lb-comments')]],
     'loader-fix':[[lf('Date'),fmtDate(v('lf-date'))],[lf('Blast shot'),v('lf-shot')],[lf('Loader No.'),v('lf-loader')],[lf('Fault'),v('lf-fault')],[lf('Time Fixed'),fmt12(v('lf-time'))],[lf('Time bet. BD/Up'),v('lf-hrs')+' Hr'],[lf('Shotfirer Name'),v('lf-shotfirer')],[lf('Comments'),v('lf-comments')]],
-    'update':[[lf('Date'),fmtDate(v('u-date'))],[lf('Blast shot'),v('u-shot')],[lf('Time'),updateTimeVal()],[lf('Shotfirer Name'),v('u-shotfirer')],[lf('Loading'),v('u-loading')+'%'],[lf('Stemming'),v('u-stem')+'%'],[lf('Tie-up'),v('u-tieup')+'%'],[lf('Priming'),v('u-priming')+'%'],[lf('Comments'),v('u-comments')]],
+    'update':[[lf('Date'),fmtDate(v('u-date'))],[lf('Blast shot'),v('u-shot')],[lf('Time'),updateTimeVal()],[lf('Shotfirer Name'),v('u-shotfirer')],[lf('Priming'),v('u-priming')+'%'],[lf('Loading'),v('u-loading')+'%'],[lf('Stemming'),v('u-stem')+'%'],[lf('Tie-up'),v('u-tieup')+'%'],[lf('Comments'),v('u-comments')]],
     'cam':[[lf('Date'),fmtDate(v('c-date'))],[lf('Blast shot'),v('c-shot')],[lf('Blasting Time'),fmt12(v('c-time'))],[lf('Point 1 (Camera)'),v('c-p1')],[lf('Point 2'),v('c-p2')],[lf('Point 3'),v('c-p3')],[lf('Point 4'),v('c-p4')],[lf('Comments'),v('c-comments')]]
   };
   return R[tab] || [];
